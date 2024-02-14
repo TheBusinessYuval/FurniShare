@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "66869701236",
+    "project_id": "furnishare-551b7",
+    "storage_bucket": "furnishare-551b7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66869701236:android:c75c512c3059ffa020ff21",
+        "android_client_info": {
+          "package_name": "com.example.furnishare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcur-kXrpR5O9dpk5qpfrRZTsBqTCInxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
