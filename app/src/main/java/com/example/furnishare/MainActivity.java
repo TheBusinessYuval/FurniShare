@@ -76,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void uploadPicture() {
         Uri file = imageUri;
-        StorageReference userImgRef = storageReference.child("images/"+file.getLastPathSegment());
+        final String randomkey  = UUID.randomUUID().toString();
+        StorageReference userImgRef = storageReference.child("images/"+randomkey);
         UploadTask uploadTask = userImgRef.putFile(file);
 
 // Register observers to listen for when the download is done or if it fails
