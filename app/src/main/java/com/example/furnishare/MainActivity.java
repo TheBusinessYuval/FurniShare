@@ -1,123 +1,145 @@
 package com.example.furnishare;
 
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
-import android.app.Instrumentation;
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.text.DateFormat;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
-    private ImageView testPic;
-    public Uri imageUri;
 
+    ImageView uploadImage;
+    Button saveButton;
+    EditText uploadTopic, uploadDesc, uploadLang;
+    String imageURL;
+    Uri uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        testPic = findViewById(R.id.testPic);
 
-        testPic.setOnClickListener(new View.OnClickListener() {
+        uploadImage = findViewById(R.id.uploadImage);
+        uploadDesc = findViewById(R.id.uploadDesc);
+        uploadTopic = findViewById(R.id.uploadTopic);
+        uploadLang = findViewById(R.id.uploadLang);
+        saveButton = findViewById(R.id.saveButton);
+
+        ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK){
+                            Intent data = result.getData();
+                            uri = data.getData();
+                            uploadImage.setImageURI(uri);
+                        } else {
+                            Toast.makeText(MainActivity.this, "No Image Selected", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
+
+        uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changePic();
+                Intent photoPicker = new Intent(Intent.ACTION_PICK);
+                photoPicker.setType("image/*");
+                activityResultLauncher.launch(photoPicker);
+            }
+        });
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveData();
             }
         });
     }
 
-    private void changePic() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction((Intent.ACTION_GET_CONTENT));
-        ActivityResultLauncher.launch(intent);
-    }
+    public void saveData(){
 
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Android Images")
+                .child(uri.getLastPathSegment());
+/*
+        AlertDialog.Builder builder = new AlertDialog.Builder(UploadActivity.this);
+        builder.setCancelable(false);
+        builder.setView(R.layout.progress_layout);
+        AlertDialog dialog = builder.create();
+        dialog.show();*/
 
-    // You can do the assignment inside onAttach or onCreate, i.e, before the activity is displayed
-    ActivityResultLauncher<Intent> ActivityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        // There are no request codes
-                        Intent data = result.getData();
-                        imageUri = data.getData();
-                        testPic.setImageURI(imageUri);
-                        uploadPicture();
-                    }
-                }
-            });
-
-
-    private void uploadPicture() {
-        Uri file = imageUri;
-        final String randomkey = UUID.randomUUID().toString();
-        Bitmap bitmap = null;
-        try {
-            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
-        List<byte[]> list = Arrays.asList(baos.toByteArray());
-        TextView tester = findViewById(R.id.tester);
-        tester.setText("staring");
-        FirebaseDatabase.getInstance("https://furnishare-551b7-default-rtdb.europe-west1.firebasedatabase.app").getReference().child("test").push().setValue(list.toString())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        storageReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
-            public void onSuccess(Void unused) {
-                TextView tester = findViewById(R.id.tester);
-                tester.setText("worked");
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                while (!uriTask.isComplete());
+                Uri urlImage = uriTask.getResult();
+                imageURL = urlImage.toString();
+                uploadData();
+                //dialog.dismiss();
             }
-        })
-                .addOnFailureListener(new OnFailureListener() {
+        }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                TextView tester = findViewById(R.id.tester);
-                tester.setText("didn't worked");
+                //dialog.dismiss();
             }
-        })
-                .addOnCanceledListener(new OnCanceledListener() {
-                    @Override
-                    public void onCanceled() {
-                        TextView tester = findViewById(R.id.tester);
-                        tester.setText("canceled");
-                    }
-                });
-
-        }
+        });
     }
 
+    public void uploadData(){
+
+        String title = uploadTopic.getText().toString();
+        String desc = uploadDesc.getText().toString();
+        String lang = uploadLang.getText().toString();
+
+        DataClass dataClass = new DataClass(title, desc, lang, imageURL);
+
+        //We are changing the child from title to currentDate,
+        // because we will be updating title as well and it may affect child value.
+
+        String currentDate = DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+
+        FirebaseDatabase.getInstance("https://furnishare-551b7-default-rtdb.europe-west1.firebasedatabase.app").getReference("Android Tutorials").child(currentDate)
+                .setValue(dataClass).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            Toast.makeText(MainActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+}
