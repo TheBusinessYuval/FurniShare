@@ -1,5 +1,8 @@
 package com.example.furnishare;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class DataClass {
 
     private String ObjectTitle;
@@ -7,7 +10,12 @@ public class DataClass {
     private String ObjectState;
     private String ObjectImage;
     private String key;
+    private FirebaseUser User;
 
+    public FirebaseUser getUser ()
+    {
+        return User;
+    }
     public String getKey() {
         return key;
     }
@@ -33,6 +41,7 @@ public class DataClass {
     }
 
     public DataClass(String ObjectTitle, String ObjectDesc, String ObjectState, String ObjectImage) {
+        this.User = FirebaseAuth.getInstance().getCurrentUser();
         this.ObjectTitle = ObjectTitle;
         this.ObjectDesc = ObjectDesc;
         this.ObjectState = ObjectState;
