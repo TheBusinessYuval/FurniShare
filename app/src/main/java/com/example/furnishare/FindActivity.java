@@ -41,8 +41,7 @@ public class FindActivity extends AppCompatActivity {
         });
         recyclerView = findViewById(R.id.recyclerView);
         //fab = findViewById(R.id.fab);
-        searchView = findViewById(R.id.search);
-        searchView.clearFocus();
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(FindActivity.this, 1);
         recyclerView.setLayoutManager(gridLayoutManager);
 
@@ -56,6 +55,7 @@ public class FindActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 dataList.clear();
                 for (DataSnapshot itemSnapshot: snapshot.getChildren()){
+
                     DataClass dataClass = itemSnapshot.getValue(DataClass.class);
                     dataClass.setKey(itemSnapshot.getKey());
                     dataList.add(dataClass);
@@ -69,23 +69,12 @@ public class FindActivity extends AppCompatActivity {
             }
         });
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                searchList(newText);
-                return true;
-            }
-        });
 
     }
     public void searchList(String text){
         ArrayList<DataClass> searchList = new ArrayList<>();
         for (DataClass dataClass: dataList){
-            if (dataClass.getDataTitle().toLowerCase().contains(text.toLowerCase())){
+            if (dataClass.getObjectTitle().toLowerCase().contains(text.toLowerCase())){
                 searchList.add(dataClass);
             }
         }

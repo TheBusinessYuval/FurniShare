@@ -1,7 +1,6 @@
 package com.example.furnishare;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +35,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        // Glide.with(context).load(dataList.get(position).getDataImage()).into(holder.recImage)
-        holder.recImage.setImageURI(Uri.parse(dataList.get(position).getObjectImage()));
-        holder.recTitle.setText(dataList.get(position).getDataTitle());
-        holder.recDesc.setText(dataList.get(position).getObjectDesc());
-        holder.recLang.setText(dataList.get(position).getObjectState());
+         Glide.with(context).load(dataList.get(position).getObjectImage()).into(holder.recImage);
+         holder.recTitle.setText(dataList.get(position).getObjectTitle());
+         holder.recDesc.setText(dataList.get(position).getObjectDesc());
 /*
         holder.recCard.setOnClickListener(new View.OnClickListener() {
             @Override
