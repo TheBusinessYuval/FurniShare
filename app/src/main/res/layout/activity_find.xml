@@ -8,25 +8,22 @@
     tools:context=".FindActivity"
     android:id="@+id/main">
 
-    <SearchView
-        android:id="@+id/search"
-        android:layout_width="386dp"
-        android:layout_height="67dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="12dp"
-        android:focusable="false"
-        app:closeIcon="@drawable/common_google_signin_btn_icon_dark_normal"
-        app:iconifiedByDefault="false"
-        app:queryHint="Search..."
-        app:searchHintIcon="@null"
-        app:searchIcon="@drawable/ic_launcher_background" />
+    <ToggleButton
+        android:id="@+id/ToggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="156dp"
+        android:layout_marginEnd="165dp"
+        android:textOff="my items"
+        android:textOn="all items" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginTop="10dp"
-        android:layout_below="@id/search"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/recyclerView"
-        android:scrollbars="vertical"/>
+        android:layout_width="match_parent"
+        android:layout_height="673dp"
+        android:layout_below="@id/ToggleButton"
+        android:layout_marginTop="10dp"
+        android:scrollbars="vertical" />
 </RelativeLayout>

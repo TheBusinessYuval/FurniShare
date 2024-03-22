@@ -33,13 +33,26 @@
                 android:textColor="@color/black"
                 android:textSize="30sp" />
 
-            <ImageView
-                android:id="@+id/uploadImage"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="10dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_launcher_background" />
+                android:layout_height="198dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/buttonCamara"
+                    android:layout_width="233dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="camara" />
+
+                <ImageView
+                    android:id="@+id/uploadImage"
+                    android:layout_width="128dp"
+                    android:layout_height="199dp"
+                    android:layout_marginTop="10dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_launcher_background" />
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/uploadTitle"

@@ -1,7 +1,7 @@
 package com.example.furnishare;
 
 import android.os.Bundle;
-import android.widget.SearchView;
+import android.widget.ToggleButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,13 +23,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FindActivity extends AppCompatActivity {
-    //FloatingActionButton fab;
     DatabaseReference databaseReference;
     ValueEventListener eventListener;
     RecyclerView recyclerView;
     List<DataClass> dataList;
     MyAdapter adapter;
-    SearchView searchView;
+
+    ToggleButton toggleButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +41,7 @@ public class FindActivity extends AppCompatActivity {
             return insets;
         });
         recyclerView = findViewById(R.id.recyclerView);
-        //fab = findViewById(R.id.fab);
+        toggleButton = findViewById(R.id.ToggleButton);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(FindActivity.this, 1);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -68,13 +69,40 @@ public class FindActivity extends AppCompatActivity {
 
             }
         });
+        toggleButton.setOnClickListener(view -> {
+            if (toggleButton.isChecked()) {
+                searchList();
+            }
+            else {
+                eventListener = databaseReference.addValueEventListener(new ValueEventListener() {
 
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        dataList.clear();
+                        for (DataSnapshot itemSnapshot: snapshot.getChildren()){
+
+                            DataClass dataClass = itemSnapshot.getValue(DataClass.class);
+                            dataClass.setKey(itemSnapshot.getKey());
+                            dataList.add(dataClass);
+                        }
+                        adapter.searchDataList((ArrayList<DataClass>) dataList);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
 
     }
-    public void searchList(String text){
+    public void searchList(){
         ArrayList<DataClass> searchList = new ArrayList<>();
         for (DataClass dataClass: dataList){
-            if (dataClass.getObjectTitle().toLowerCase().contains(text.toLowerCase())){
+
+            if (dataClass.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
                 searchList.add(dataClass);
             }
         }

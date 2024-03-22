@@ -1,10 +1,15 @@
 package com.example.furnishare;
 
-
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +22,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,13 +34,14 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.util.Calendar;
 
 public class UploadActivity extends AppCompatActivity {
 
     ImageView uploadImage;
-    Button saveButton;
+    Button saveButton,camaraButton;
     EditText uploadTitle, uploadDesc, uploadState;
     String imageURL;
     Uri uri;
@@ -44,6 +52,7 @@ public class UploadActivity extends AppCompatActivity {
         setContentView(R.layout.activity_upload);
 
         uploadImage = findViewById(R.id.uploadImage);
+        camaraButton =findViewById(R.id.buttonCamara);
         uploadDesc = findViewById(R.id.uploadDesc);
         uploadTitle = findViewById(R.id.uploadTitle);
         uploadState = findViewById(R.id.uploadState);
@@ -71,6 +80,12 @@ public class UploadActivity extends AppCompatActivity {
                 Intent photoPicker = new Intent(Intent.ACTION_PICK);
                 photoPicker.setType("image/*");
                 activityResultLauncher.launch(photoPicker);
+            }
+        });
+        camaraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                captureImage();
             }
         });
 
@@ -102,7 +117,7 @@ public class UploadActivity extends AppCompatActivity {
                 Uri urlImage = uriTask.getResult();
                 imageURL = urlImage.toString();
                 uploadData();
-                //dialog.dismiss();
+                //dialog.(dismiss);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -140,5 +155,35 @@ public class UploadActivity extends AppCompatActivity {
                         Toast.makeText(UploadActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+    public  void captureImage()
+    {
+        if(ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA} ,1);
+            return;
+        }
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, 2);
+
+    }
+    @Override
+    public  void onActivityResult(int requestCode,int resultCode,@NonNull Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 2)
+        {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            uploadImage.setImageBitmap(imageBitmap);
+            Log.d("TAG","worked");
+            uri = getImageUri(getApplicationContext(),imageBitmap);
+        }
+    }
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
     }
 }

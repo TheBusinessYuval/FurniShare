@@ -1,6 +1,7 @@
 package com.example.furnishare;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,19 +39,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
          Glide.with(context).load(dataList.get(position).getObjectImage()).into(holder.recImage);
          holder.recTitle.setText(dataList.get(position).getObjectTitle());
          holder.recDesc.setText(dataList.get(position).getObjectDesc());
-/*
+
         holder.recCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, DetailActivity.class);
                 intent.putExtra("Image", dataList.get(holder.getAdapterPosition()).getObjectImage());
                 intent.putExtra("Description", dataList.get(holder.getAdapterPosition()).getObjectDesc());
-                intent.putExtra("Title", dataList.get(holder.getAdapterPosition()).getDataTitle());
-                intent.putExtra("Key",dataList.get(holder.getAdapterPosition()).getKey());
-                intent.putExtra("Language", dataList.get(holder.getAdapterPosition()).getObjectState());
+                intent.putExtra("Title", dataList.get(holder.getAdapterPosition()).getObjectTitle());
+                intent.putExtra("User",dataList.get(holder.getAdapterPosition()).getKey());
+                intent.putExtra("State", dataList.get(holder.getAdapterPosition()).getObjectState());
                 context.startActivity(intent);
             }
-        });*/
+        });
     }
 
     @Override
@@ -67,7 +68,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 class MyViewHolder extends RecyclerView.ViewHolder{
 
     ImageView recImage;
-    TextView recTitle, recDesc, recLang;
+    TextView recTitle, recDesc;
     CardView recCard;
 
     public MyViewHolder(@NonNull View itemView) {
@@ -76,7 +77,6 @@ class MyViewHolder extends RecyclerView.ViewHolder{
         recImage = itemView.findViewById(R.id.recImage);
         recCard = itemView.findViewById(R.id.recCard);
         recDesc = itemView.findViewById(R.id.recDesc);
-       // recLang = itemView.findViewById(R.id.recLang);
         recTitle = itemView.findViewById(R.id.recTitle);
     }
 }

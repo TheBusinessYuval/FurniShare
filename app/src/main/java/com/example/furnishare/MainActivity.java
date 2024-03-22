@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
         upload = findViewById(R.id.upload);
 
-        myfrurn = findViewById(R.id.myfrurn);
 
         logout = findViewById(R.id.logout);
 
@@ -45,9 +44,6 @@ public class MainActivity extends AppCompatActivity {
         upload.setOnClickListener(view -> {
             Intent intent = new Intent(this,UploadActivity.class);
             startActivity(intent);
-        });
-        myfrurn.setOnClickListener(view -> {
-
         });
         logout.setOnClickListener(view -> {
             FirebaseAuth.getInstance().signOut();
