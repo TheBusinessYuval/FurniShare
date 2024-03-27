@@ -2,7 +2,6 @@ package com.example.furnishare;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,18 +10,17 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 public class DetailActivity extends AppCompatActivity {
 
     TextView detailDesc, detailTitle, detailLang;
     ImageView detailImage;
     Button deleteButton, editButton;
-    String key = "";
+    String User = "";
+    String key= "";
     String imageUrl = "";
 
     @Override
@@ -34,7 +32,6 @@ public class DetailActivity extends AppCompatActivity {
         detailImage = findViewById(R.id.detailImage);
         detailTitle = findViewById(R.id.detailTitle);
         deleteButton = findViewById(R.id.deleteButton);
-        editButton = findViewById(R.id.editButton);
         detailLang = findViewById(R.id.detailUser);
 
         Bundle bundle = getIntent().getExtras();
@@ -42,39 +39,24 @@ public class DetailActivity extends AppCompatActivity {
             detailDesc.setText(bundle.getString("Description"));
             detailTitle.setText(bundle.getString("Title"));
             detailLang.setText(bundle.getString("State"));
-            key = bundle.getString("User");
+            User = bundle.getString("User");
+
             imageUrl = bundle.getString("Image");
             Glide.with(this).load(bundle.getString("Image")).into(detailImage);
+            key = bundle.getString("Key");
         }
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Android Tutorials");
-                FirebaseStorage storage = FirebaseStorage.getInstance();
+        deleteButton.setOnClickListener(view -> {
+            final DatabaseReference reference = FirebaseDatabase.getInstance("https://furnishare-551b7-default-rtdb.europe-west1.firebasedatabase.app").getReference("Android Tutorials");
+            FirebaseStorage storage = FirebaseStorage.getInstance();
 
-                StorageReference storageReference = storage.getReferenceFromUrl(imageUrl);
-                storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        reference.child(key).removeValue();
-                        Toast.makeText(DetailActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                        finish();
-                    }
-                });
-            }
-        });
-        /*editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DetailActivity.this, UpdateActivity.class)
-                        .putExtra("Title", detailTitle.getText().toString())
-                        .putExtra("Description", detailDesc.getText().toString())
-                        .putExtra("Language", detailLang.getText().toString())
-                        .putExtra("Image", imageUrl)
-                        .putExtra("Key", key);
-                startActivity(intent);
-            }
-        });*/
+            //StorageReference storageReference = storage.getReferenceFromUrl(imageUrl);
+           // storageReference.delete().addOnSuccessListener(unused -> {
+                reference.child(key).removeValue();
+                    Toast.makeText(DetailActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    finish();
+
+            });
+        }//);
     }
-}
+//}

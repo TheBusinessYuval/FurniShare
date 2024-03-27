@@ -103,6 +103,7 @@ public class FindActivity extends AppCompatActivity {
         for (DataClass dataClass: dataList){
 
             if (dataClass.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+
                 searchList.add(dataClass);
             }
         }

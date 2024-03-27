@@ -39,18 +39,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
          Glide.with(context).load(dataList.get(position).getObjectImage()).into(holder.recImage);
          holder.recTitle.setText(dataList.get(position).getObjectTitle());
          holder.recDesc.setText(dataList.get(position).getObjectDesc());
+        holder.recCard.setOnClickListener(view -> {
+            Intent intent = new Intent(context, DetailActivity.class);
+            intent.putExtra("Image", dataList.get(holder.getAdapterPosition()).getObjectImage());
+            intent.putExtra("Description", dataList.get(holder.getAdapterPosition()).getObjectDesc());
+            intent.putExtra("Title", dataList.get(holder.getAdapterPosition()).getObjectTitle());
+            intent.putExtra("User",dataList.get(holder.getAdapterPosition()).getUid());
+            intent.putExtra("State", dataList.get(holder.getAdapterPosition()).getObjectState());
+            intent.putExtra("Key",dataList.get(holder.getAdapterPosition()).getKey());
+            context.startActivity(intent);
 
-        holder.recCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra("Image", dataList.get(holder.getAdapterPosition()).getObjectImage());
-                intent.putExtra("Description", dataList.get(holder.getAdapterPosition()).getObjectDesc());
-                intent.putExtra("Title", dataList.get(holder.getAdapterPosition()).getObjectTitle());
-                intent.putExtra("User",dataList.get(holder.getAdapterPosition()).getKey());
-                intent.putExtra("State", dataList.get(holder.getAdapterPosition()).getObjectState());
-                context.startActivity(intent);
-            }
         });
     }
 
